@@ -23,7 +23,7 @@ export async function POST(request:Request){
    const counter=await tx.counter.upsert({where:{key:"practice"},create:{key:"practice",value:1},update:{value:{increment:1}}});
    const code=`PR-${String(counter.value).padStart(5,"0")}`;
    const practice=await tx.practice.create({data:{code,title:d.title,description:d.description,siteId:d.siteId,category:d.category,priority:d.priority,assigneeId:d.assigneeId||null,dueAt:d.dueAt?new Date(`${d.dueAt}T12:00:00.000Z`):null,createdById:user.id}});
-   if(d.note.trim())await tx.note.create({data:{body:d.note.trim(),practiceId:practice.id,authorId:user.id}});
+   if(d.note?.trim())await tx.note.create({data:{body:d.note.trim(),practiceId:practice.id,authorId:user.id}});
    await tx.auditEvent.create({data:{actorId:user.id,practiceId:practice.id,action:"PRACTICE_CREATED",details:{code,site:site.name,category:d.category,priority:d.priority} as Prisma.InputJsonValue}});
    return practice;
  });
